@@ -35,8 +35,48 @@ more parameters .
 
 #include<stdlib.h>
 
+int check_path(int *maze, int rows, int columns, int x1, int y1, int x2, int y2, int** visited);
 
 int path_exists(int *maze, int rows, int columns, int x1, int y1, int x2, int y2)
 {
-	return 1;
+	if (rows <= 0 || columns <= 0 || x1<0 || x2<0 || x1>rows - 1 || x2>rows - 1 || y1<0 || y2<0 || y1>columns - 1 || y2>columns - 1)
+		return 0;
+	else{
+		int **visited = (int**)malloc(sizeof(int*)*rows);
+		for (int i = 0; i < rows; i++){
+			visited[i] = (int*)malloc(sizeof(int)*columns);
+		}
+		for (int i = 0; i < rows; i++){
+			for (int j = 0; j < columns; j++)
+				visited[i][j] = 0;
+		}
+		visited[x1][y1] = 1;
+		return check_path(maze, rows, columns, x1, y1, x2, y2, visited);
+	}
+}
+
+int check_path(int *maze, int rows, int columns, int x1, int y1, int x2, int y2, int** visited){
+	if (*(maze + (x1*columns + y1)) == 0)
+		return 0;
+	if (x1 == x2 && y1 == y2)
+		return 1;
+
+	int res = 0;
+	if (x1 + 1 < rows && visited[x1 + 1][y1] == 0){
+		visited[x1 + 1][y1] = 1;
+		res = (check_path(maze, rows, columns, x1 + 1, y1, x2, y2, visited));
+	}
+	if (y1 + 1 <columns && visited[x1][y1 + 1] == 0 && res == 0){
+		visited[x1][y1 + 1] = 1;
+		res = (check_path(maze, rows, columns, x1, y1 + 1, x2, y2, visited));
+	}
+	if (x1 - 1 >= 0 && visited[x1 - 1][y1] == 0 && res == 0){
+		visited[x1 - 1][y1] = 1;
+		res = (check_path(maze, rows, columns, x1 - 1, y1, x2, y2, visited));
+	}
+	if (y1 - 1 >= 0 && visited[x1][y1 - 1] == 0 && res == 0){
+		visited[x1][y1 - 1] = 1;
+		res = (check_path(maze, rows, columns, x1, y1 - 1, x2, y2, visited));
+	}
+	return res;
 }

@@ -23,8 +23,15 @@
 */
 #include "stdafx.h"
 
+int no_ways[25] = { 0 };
 
 int get_steps(int s)
 {
-	return 0;
+	if (s <= 2)
+		return s;
+	if (no_ways[s] != 0)
+		return no_ways[s];
+	no_ways[s] = get_steps(s - 1) + get_steps(s - 2);
+
+	return no_ways[s];
 }

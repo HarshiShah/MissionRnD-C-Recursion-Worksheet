@@ -43,6 +43,75 @@ P.S: The Above Problem is just a modified version of a popular BackTracking prob
 */
 
 #include "stdafx.h"
+void unmark(int *battlefield, int n, int row, int column);
+void mark(int *battlefield, int n, int row, int column);
+int place_nsnipers(int *battlefield, int n, int row_num);
+
 int solve_nsnipers(int *battlefield, int n){
-	return 0;
+	if (n == 1){
+		*battlefield = 1;
+		return 1;
+	}
+	if (n <= 3)
+		return 0;
+	*(battlefield) = -1;
+	int res = place_nsnipers(battlefield, n, 0);
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++)
+		if (*(battlefield + (n*i + j)) < 0)
+			*(battlefield + (n*i + j)) = 0;
+	}
+	return res;
+}
+
+int place_nsnipers(int *battlefield, int n, int row_num){
+	if (row_num == n)
+		return 1;
+	int index = 0;
+	while (index < n){
+		if (*(battlefield + (n*row_num + index)) == 0){
+			mark(battlefield, n, row_num, index);
+			if (place_nsnipers(battlefield, n, row_num + 1) == 0)
+				unmark(battlefield, n, row_num, index);
+			else{
+
+				*(battlefield + (n*row_num + index)) = 1;
+				break;
+			}
+		}
+		index++;
+	}
+	if (index == n)
+		return 0;
+	else
+		return 1;
+}
+
+void mark(int *battlefield, int n, int row, int column){
+	int i, j;
+	for (i = column + 1; i < n; i++)
+		*(battlefield + (n*row + i)) = *(battlefield + (n*row + i)) - 1;
+	for (i = column - 1; i >= 0; i--)
+		*(battlefield + (n*row + i)) = *(battlefield + (n*row + i)) - 1;
+
+	for (i = row + 1; i < n; i++)
+		*(battlefield + (n*i + column)) = *(battlefield + (n*i + column)) - 1;
+	for (i = row + 1, j = column + 1; i < n &&j < n; i++, j++)
+		*(battlefield + (n*i + j)) = *(battlefield + (n*i + j)) - 1;
+	for (i = row + 1, j = column - 1; i <n &&j >= 0; i++, j--)
+		*(battlefield + (n*i + j)) = *(battlefield + (n*i + j)) - 1;
+}
+
+void unmark(int *battlefield, int n, int row, int column){
+	int i, j;
+	for (i = column + 1; i < n; i++)
+		*(battlefield + (n*row + i)) = *(battlefield + (n*row + i)) + 1;
+	for (i = column - 1; i >= 0; i--)
+		*(battlefield + (n*row + i)) = *(battlefield + (n*row + i)) + 1;
+	for (i = row + 1; i < n; i++)
+		*(battlefield + (n*i + column)) = *(battlefield + (n*i + column)) + 1;
+	for (i = row + 1, j = column + 1; i < n &&j < n; i++, j++)
+		*(battlefield + (n*i + j)) = *(battlefield + (n*i + j)) + 1;
+	for (i = row + 1, j = column - 1; i <n && j >= 0; i++, j--)
+		*(battlefield + (n*i + j)) = *(battlefield + (n*i + j)) + 1;
 }
